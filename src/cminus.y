@@ -196,7 +196,8 @@ fator :
         LPAREN expressao RPAREN {}
 |       var {}
 |       ativacao {}
-|       NUM {}
+|       NUM {$$ = newExpNode(ConstK);
+             $$->attr.val = atoi(tokenString);}
 ;
 
 ativacao : 
