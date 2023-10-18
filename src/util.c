@@ -157,6 +157,8 @@ static void printSpaces(void)
 /* procedure printTree prints a syntax tree to the 
  * listing file using indentation to indicate subtrees
  */
+
+// Tem que mudar isso aqui pra print tree
 void printTree( TreeNode * tree )
 { int i;
   INDENT;

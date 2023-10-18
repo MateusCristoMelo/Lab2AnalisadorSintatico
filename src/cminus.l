@@ -19,6 +19,7 @@ identifier  {letter}+
 newline     \r?\n|\r
 whitespace  [ \t]+
 
+%option noyywrap
 
 %%
 

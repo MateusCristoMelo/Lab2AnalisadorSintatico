@@ -26,7 +26,7 @@
 #ifndef YYPARSER
 
 /* the name of the following file may change */
-#include "cminus.tab.h"
+#include "parser.h"
 
 /* ENDFILE is implicitly defined by Yacc/Bison,
  * and not included in the tab.h file
@@ -62,6 +62,7 @@ extern int lineno; /* source line number for listing */
 /***********   Syntax tree for parsing ************/
 /**************************************************/
 
+//Tem que mudar isso pra add mais kind provavelmente
 typedef enum {StmtK,ExpK} NodeKind;
 typedef enum {IfK,RepeatK,AssignK,ReadK,WriteK} StmtKind;
 typedef enum {OpK,ConstK,IdK} ExpKind;
