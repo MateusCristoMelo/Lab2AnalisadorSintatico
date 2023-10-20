@@ -1,6 +1,6 @@
 /****************************************************/
 /* File: util.h                                     */
-/* Utility functions for the CMINUS compiler          */
+/* Utility functions for the TINY compiler          */
 /* Compiler Construction: Principles and Practice   */
 /* Kenneth C. Louden                                */
 /****************************************************/
@@ -9,7 +9,7 @@
 #define _UTIL_H_
 
 /* Procedure printToken prints a token 
- * and its lexeme to the listing file
+ * and its lexeme 
  */
 void printToken( TokenType, const char* );
 
@@ -28,8 +28,8 @@ TreeNode * newExpNode(ExpKind);
  */
 char * copyString( char * );
 
-/* procedure printTree prints a syntax tree to the 
- * listing file using indentation to indicate subtrees
+/* procedure printTree prints a syntax tree 
+ * using indentation to indicate subtrees
  */
 void printTree( TreeNode * );
 

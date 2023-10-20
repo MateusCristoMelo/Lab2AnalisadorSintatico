@@ -1,6 +1,7 @@
+
 /****************************************************/
 /* File: scan.h                                     */
-/* The scanner interface for the CMINUS compiler      */
+/* The scanner interface for the TINY compiler      */
 /* Compiler Construction: Principles and Practice   */
 /* Kenneth C. Louden                                */
 /****************************************************/
@@ -9,7 +10,7 @@
 #define _SCAN_H_
 
 /* MAXTOKENLEN is the maximum size of a token */
-#define MAXTOKENLEN 100
+#define MAXTOKENLEN 40
 
 /* tokenString array stores the lexeme of each token */
 extern char tokenString[MAXTOKENLEN+1];

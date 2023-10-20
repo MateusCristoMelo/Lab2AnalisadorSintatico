@@ -1,7 +1,7 @@
 /****************************************************/
 /* File: util.c                                     */
 /* Utility function implementation                  */
-/* for the CMINUS compiler                          */
+/* for the TINY compiler                            */
 /* Compiler Construction: Principles and Practice   */
 /* Kenneth C. Louden                                */
 /****************************************************/
@@ -10,7 +10,7 @@
 #include "util.h"
 
 /* Procedure printToken prints a token 
- * and its lexeme to the listing file
+ * and its lexeme 
  */
 void printToken( TokenType token, const char* tokenString )
 { switch (token)
@@ -55,7 +55,7 @@ TreeNode * newStmtNode(StmtKind kind)
 { TreeNode * t = (TreeNode *) malloc(sizeof(TreeNode));
   int i;
   if (t==NULL)
-    fprintf(listing,"Out of memory error at line %d\n",lineno);
+    pce("Out of memory error at line %d\n",lineno);
   else {
     for (i=0;i<MAXCHILDREN;i++) t->child[i] = NULL;
     t->sibling = NULL;
@@ -73,7 +73,7 @@ TreeNode * newExpNode(ExpKind kind)
 { TreeNode * t = (TreeNode *) malloc(sizeof(TreeNode));
   int i;
   if (t==NULL)
-    fprintf(listing,"Out of memory error at line %d\n",lineno);
+    pce("Out of memory error at line %d\n",lineno);
   else {
     for (i=0;i<MAXCHILDREN;i++) t->child[i] = NULL;
     t->sibling = NULL;
@@ -93,9 +93,9 @@ char * copyString(char * s)
   char * t;
   if (s==NULL) return NULL;
   n = strlen(s)+1;
-  t = (char *)malloc(n);
+  t = malloc(n);
   if (t==NULL)
-    fprintf(listing,"Out of memory error at line %d\n",lineno);
+    pce("Out of memory error at line %d\n",lineno);
   else strcpy(t,s);
   return t;
 }
@@ -113,13 +113,12 @@ static int indentno = 0;
 static void printSpaces(void)
 { int i;
   for (i=0;i<indentno;i++)
-    fprintf(listing," ");
+    pc(" ");
 }
 
-/* procedure printTree prints a syntax tree to the 
- * listing file using indentation to indicate subtrees
+/* procedure printTree prints a syntax tree 
+ * using indentation to indicate subtrees
  */
-
 void printTree( TreeNode * tree )
 { int i;
   INDENT;

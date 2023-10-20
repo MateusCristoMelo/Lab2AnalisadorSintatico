@@ -1,6 +1,6 @@
 /****************************************************/
 /* File: main.c                                     */
-/* Main program for CMINUS compiler                 */
+/* Main program for TINY compiler                   */
 /* Compiler Construction: Principles and Practice   */
 /* Kenneth C. Louden                                */
 /****************************************************/
@@ -15,7 +15,7 @@
 /* set NO_CODE to TRUE to get a compiler that does not
  * generate code
  */
-#define NO_CODE TRUE
+#define NO_CODE FALSE
 
 #include "util.h"
 #if NO_PARSE
@@ -38,11 +38,11 @@ FILE * code;
 char **linhas = NULL;
 
 /* allocate and set tracing flags */
-int EchoSource = TRUE;
+int EchoSource = FALSE;
 int TraceScan = TRUE;
-int TraceParse = FALSE;
-int TraceAnalyze = FALSE;
-int TraceCode = FALSE;
+int TraceParse = TRUE;
+int TraceAnalyze = TRUE;
+int TraceCode = TRUE;
 
 int Error = FALSE;
 
@@ -57,42 +57,51 @@ int main( int argc, char * argv[] )
   FILE * linhas_codigo;
   FILE * linhas_iteracao;
 
-  char pgm[120]; /* source code file name */
-  if (argc != 2)
-    { fprintf(stderr,"usage: %s <filename>\n",argv[0]);
+    char pgm[120]; /* source code file name */
+    if ((argc < 2) || (argc > 3))
+    { fprintf(stderr,"usage: %s <filename> [<detailpath>]\n",argv[0]);
       exit(1);
     }
-  strcpy(pgm,argv[1]) ;
-  if (strchr (pgm, '.') == NULL)
-     strcat(pgm,".c");
-  source = fopen(pgm,"r");
-  linhas_codigo = fopen(pgm,"r");
+    strcpy(pgm,argv[1]);
+    if (strchr (pgm, '.') == NULL)
+        strcat(pgm,".c");
+    source = fopen(pgm,"r");
 
-  if (source==NULL)
-  { fprintf(stderr,"File %s not found\n",pgm);
-    exit(1);
-  }
+    linhas_codigo = fopen(pgm,"r");
+
+    //redundant_source = fopen(pgm, "r");
+    if (source==NULL)
+    { fprintf(stderr,"File %s not found\n",pgm);
+        exit(1);
+    }
+
     while ((lidos = getline(&linha, &tamanho, linhas_codigo)) != -1) {
       linhas = realloc(linhas, (numero_de_linhas + 1) * sizeof(char *));
       linhas[numero_de_linhas] = malloc((size_t)(lidos + 1));
       strcpy(linhas[numero_de_linhas], linha);
       numero_de_linhas++;
-  }
-
-
-
-  listing = stdout; /* send listing to screen */
+    }
+    
+    char detailpath[200];
+    if (3 == argc) {
+        strcpy(detailpath,argv[2]);
+    } else strcpy(detailpath,"/tmp/");
+    
+    listing = stdout; /* send listing to screen */
+    initializePrinter(detailpath, pgm, LOGALL);
+    
   fprintf(listing,"\nC- COMPILATION: %s\n",pgm);
-  
 #if NO_PARSE
   while (getToken()!=ENDFILE);
 #else
   syntaxTree = parse();
+  doneLEXstartSYN();
   if (TraceParse) {
     fprintf(listing,"\nSyntax tree:\n");
     printTree(syntaxTree);
   }
 #if !NO_ANALYZE
+  doneSYNstartTAB();
   if (! Error)
   { if (TraceAnalyze) fprintf(listing,"\nBuilding Symbol Table...\n");
     buildSymtab(syntaxTree);
@@ -101,24 +110,16 @@ int main( int argc, char * argv[] )
     if (TraceAnalyze) fprintf(listing,"\nType Checking Finished\n");
   }
 #if !NO_CODE
+  doneTABstartGEN();
   if (! Error)
-  { char * codefile;
-    int fnlen = strcspn(pgm,".");
-    codefile = (char *) calloc(fnlen+4, sizeof(char));
-    strncpy(codefile,pgm,fnlen);
-    strcat(codefile,".tm");
-    code = fopen(codefile,"w");
-    if (code == NULL)
-    { printf("Unable to open %s\n",codefile);
-      exit(1);
-    }
-    codeGen(syntaxTree,codefile);
-    fclose(code);
+  { 
+    codeGen(syntaxTree);
   }
 #endif
 #endif
 #endif
   fclose(source);
+  closePrinter();
   return 0;
 }
 

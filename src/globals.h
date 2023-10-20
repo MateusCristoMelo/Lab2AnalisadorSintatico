@@ -1,6 +1,7 @@
 /****************************************************/
 /* File: globals.h                                  */
-/* Global types and vars for CMINUS compiler        */
+/* Yacc/Bison Version                               */
+/* Global types and vars for TINY compiler          */
 /* must come before other include files             */
 /* Compiler Construction: Principles and Practice   */
 /* Kenneth C. Louden                                */
@@ -13,6 +14,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+#include "log.h"
 
 /* Yacc/Bison generates internally its own values
  * for the tokens. Other files can access these values
@@ -26,24 +28,14 @@
 #ifndef YYPARSER
 
 /* the name of the following file may change */
+//#include "tiny.tab.h"
 #include "parser.h"
 
 /* ENDFILE is implicitly defined by Yacc/Bison,
  * and not included in the tab.h file
  */
 #define ENDFILE 0
-/*
-typedef enum 
-    /* book-keeping tokens 
-   {ENDFILE,ERROR,
-    /* reserved words 
-    ELSE,INT,IF,VOID,WHILE,RETURN,
-    /* multicharacter tokens 
-    ID,NUM,
-    /* special symbols 
-    ASSIGN, EQ, LT, LE, GT, GE, NE, PLUS, MINUS, TIMES, OVER, LPAREN, RPAREN, SEMI, COMMA, LBRACE, RBRACE, LBRACKET, RBRACKET
-   } TokenType;
-*/
+
 #endif
 
 #ifndef FALSE
@@ -55,7 +47,7 @@ typedef enum
 #endif
 
 /* MAXRESERVED = the number of reserved words */
-#define MAXRESERVED 32
+#define MAXRESERVED 8
 
 /* Yacc/Bison generates its own integer values
  * for tokens
@@ -73,7 +65,6 @@ extern int lineno; /* source line number for listing */
 /***********   Syntax tree for parsing ************/
 /**************************************************/
 
-//Tem que mudar isso pra add mais kind provavelmente
 typedef enum {StmtK,ExpK} NodeKind;
 typedef enum {IfK,WhileK,AssignK,ReturnK,CallK,VarDecK,FunDecK} StmtKind;
 typedef enum {OpK,ConstK,IdK} ExpKind;
