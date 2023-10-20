@@ -14,41 +14,13 @@
  */
 void printToken( TokenType token, const char* tokenString )
 { switch (token)
-  { case AUTO:
-    case BREAK:
-    case CASE:
-    case CHAR:
-    case CONST:
-    case CONTINUE:
-    case DEFAULT:
-    case DO:
-    case DOUBLE:
+  { 
     case ELSE:
-    case ENUM:
-    case EXTERN:
-    case FLOAT:
-    case FOR:
-    case GOTO:
     case IF:
-    case INT:
-    case LONG:
-    case REGISTER:
     case RETURN:
-    case SHORT:
-    case SIGNED:
-    case SIZEOF:
-    case STATIC:
-    case STRUCT:
-    case SWITCH:
-    case TYPEDEF:
-    case UNION:
-    case UNSIGNED:
-    case VOID:
-    case VOLATILE:
     case WHILE:
-      fprintf(listing,
-         "reserved word: %s\n",tokenString);
-      break;
+    case VOID:
+    case INT: fprintf(listing,"reserved word: %s\n",tokenString); break;
     case ASSIGN: fprintf(listing,"=\n"); break;
     case EQ: fprintf(listing,"==\n"); break;
     case LT: fprintf(listing,"<\n"); break;
@@ -69,20 +41,10 @@ void printToken( TokenType token, const char* tokenString )
     case LBRACKET: fprintf(listing,"[\n"); break;
     case RBRACKET: fprintf(listing,"]\n"); break;
     case ENDFILE: fprintf(listing,"EOF\n"); break;
-    case NUM:
-      fprintf(listing,
-          "NUM, val= %s\n",tokenString);
-      break;
-    case ID:
-      fprintf(listing,
-          "ID, name= %s\n",tokenString);
-      break;
-    case ERROR:
-      fprintf(listing,
-          "ERROR: %s\n",tokenString);
-      break;
-    default: /* should never happen */
-      fprintf(listing,"Unknown token: %d\n",token);
+    case NUM: fprintf(listing, "NUM, val= %s\n",tokenString); break;
+    case ID: fprintf(listing, "ID, name= %s\n",tokenString); break;
+    case ERROR: fprintf(listing, "ERROR: %s\n",tokenString); break;
+    default: /* should never happen */ fprintf(listing,"Unknown token: %d\n",token);
   }
 }
 
@@ -158,7 +120,6 @@ static void printSpaces(void)
  * listing file using indentation to indicate subtrees
  */
 
-// Tem que mudar isso aqui pra print tree
 void printTree( TreeNode * tree )
 { int i;
   INDENT;
@@ -166,41 +127,22 @@ void printTree( TreeNode * tree )
     printSpaces();
     if (tree->nodekind==StmtK)
     { switch (tree->kind.stmt) {
-        case IfK:
-          fprintf(listing,"If\n");
-          break;
-        case RepeatK:
-          fprintf(listing,"Repeat\n");
-          break;
-        case AssignK:
-          fprintf(listing,"Assign to: %s\n",tree->attr.name);
-          break;
-        case ReadK:
-          fprintf(listing,"Read: %s\n",tree->attr.name);
-          break;
-        case WriteK:
-          fprintf(listing,"Write\n");
-          break;
-        default:
-          fprintf(listing,"Unknown ExpNode kind\n");
-          break;
+        case IfK: fprintf(listing,"If\n"); break;
+        case WhileK: fprintf(listing,"While\n"); break;
+        case AssignK: fprintf(listing,"Assign to: %s\n",tree->attr.name); break;
+        case ReturnK: fprintf(listing,"Return\n"); break;
+        case CallK: fprintf(listing,"Call\n"); break;
+        case VarDecK: fprintf(listing,"Variable Declaration\n"); printToken(tree->attr.op, "\0"); break;
+        case FunDecK: fprintf(listing,"Function Declaration\n"); printToken(tree->attr.op, "\0"); break;
+        default: fprintf(listing,"Unknown ExpNode kind\n"); break;
       }
     }
     else if (tree->nodekind==ExpK)
     { switch (tree->kind.exp) {
-        case OpK:
-          fprintf(listing,"Op: ");
-          printToken(tree->attr.op,"\0");
-          break;
-        case ConstK:
-          fprintf(listing,"Const: %d\n",tree->attr.val);
-          break;
-        case IdK:
-          fprintf(listing,"Id: %s\n",tree->attr.name);
-          break;
-        default:
-          fprintf(listing,"Unknown ExpNode kind\n");
-          break;
+        case OpK: fprintf(listing,"Op: "); printToken(tree->attr.op,"\0"); break;
+        case ConstK: fprintf(listing,"Const: %d\n",tree->attr.val); break;
+        case IdK: fprintf(listing,"Id: %s\n",tree->attr.name); break;
+        default: fprintf(listing,"Unknown ExpNode kind\n"); break;
       }
     }
     else fprintf(listing,"Unknown node kind\n");

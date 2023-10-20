@@ -54,7 +54,7 @@ static void genStmt( TreeNode * tree)
          if (TraceCode)  emitComment("<- if") ;
          break; /* if_k */
 
-      case RepeatK:
+      case WhileK:
          if (TraceCode) emitComment("-> repeat") ;
          p1 = tree->child[0] ;
          p2 = tree->child[1] ;
@@ -78,12 +78,12 @@ static void genStmt( TreeNode * tree)
          if (TraceCode)  emitComment("<- assign") ;
          break; /* assign_k */
 
-      case ReadK:
+      case VarDecK:
          emitRO("IN",ac,0,0,"read integer value");
          loc = st_lookup(tree->attr.name);
          emitRM("ST",ac,loc,gp,"read: store value");
          break;
-      case WriteK:
+      case FunDecK:
          /* generate code for expression to write */
          cGen(tree->child[0]);
          /* now output it */

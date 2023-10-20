@@ -32,7 +32,18 @@
  * and not included in the tab.h file
  */
 #define ENDFILE 0
-
+/*
+typedef enum 
+    /* book-keeping tokens 
+   {ENDFILE,ERROR,
+    /* reserved words 
+    ELSE,INT,IF,VOID,WHILE,RETURN,
+    /* multicharacter tokens 
+    ID,NUM,
+    /* special symbols 
+    ASSIGN, EQ, LT, LE, GT, GE, NE, PLUS, MINUS, TIMES, OVER, LPAREN, RPAREN, SEMI, COMMA, LBRACE, RBRACE, LBRACKET, RBRACKET
+   } TokenType;
+*/
 #endif
 
 #ifndef FALSE
@@ -64,7 +75,7 @@ extern int lineno; /* source line number for listing */
 
 //Tem que mudar isso pra add mais kind provavelmente
 typedef enum {StmtK,ExpK} NodeKind;
-typedef enum {IfK,RepeatK,AssignK,ReadK,WriteK} StmtKind;
+typedef enum {IfK,WhileK,AssignK,ReturnK,CallK,VarDecK,FunDecK} StmtKind;
 typedef enum {OpK,ConstK,IdK} ExpKind;
 
 /* ExpType is used for type checking */

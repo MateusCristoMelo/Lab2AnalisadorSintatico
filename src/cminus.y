@@ -21,309 +21,236 @@ int yyerror(char *s);
 
 %}
 
-%token AUTO BREAK CASE CHAR CONST CONTINUE DEFAULT DO DOUBLE ELSE ENUM EXTERN FLOAT FOR GOTO IF INT LONG REGISTER RETURN SHORT SIGNED SIZEOF STATIC STRUCT SWITCH TYPEDEF UNION UNSIGNED VOID VOLATILE WHILE 
+%token ELSE IF INT RETURN VOID WHILE 
 %token ID NUM 
 %token ASSIGN EQ LT LE GT GE NE PLUS MINUS TIMES OVER LPAREN RPAREN SEMI COMMA LBRACE RBRACE LBRACKET RBRACKET 
 %token ERROR 
 
-%% /* Grammar for CMINUS */
-
-/* CMINUS
-programa → declaração-lista
-declaração-lista → declaração-lista declaração | declaração
-declaração → var-declaração | fun-declaração
-var-declaração → tipo-especificador ID ; | tipo-especificador ID [ NUM ] ;
-tipo-especificador → int | void
-fun-declaração → tipo-especificador ID ( params ) composto-decl
-params → param-lista | void
-param-lista → param-lista, param | param
-param → tipo-especificador ID | tipo-especificador ID [ ]
-composto-decl → { local-declarações statement-lista }
-local-declarações → local-declarações var-declaração | vazio
-statement-lista → statement-lista statement | vazio
-statement → expressao-decl | composto-decl | selecao_decl | iteracao_decl | retorno_decl
-expressao-decl → expressao ; | ;
-selecao_decl → if ( expressao ) statement | if ( expressao ) statement else statement
-iteracao_decl → while ( expressao ) statement
-retorno_decl → return ; | return expressao;
-expressao → var = expressao | simples_expressao
-var → ID | ID [ expressao ]
-simples_expressao → soma_expressao  relacional soma_expressao  | soma_expressao 
-relacional → <= | < | > | >= | == | !=
-soma_expressao  → soma_expressao  soma termo | termo
-soma → + | -
-termo → termo mult fator | fator
-mult → * | /
-fator → ( expressao ) | var | ativacao | NUM
-ativacao → ID ( args )
-args → arg_lista | vazio
-arg_lista → arg_lista , expressao | expressao
-End of CMINUS */
-
-
-// Tem que mudar isso pra colocar na gramatica do CMINUS
+%%
 
 program: 
-          declaracao_lista { savedTree = $1; } 
+          declaracao_lista {savedTree = $1;} 
 ;
 
 declaracao_lista:
-                  declaracao_lista declaracao {}
-|                 declaracao {}
+                  declaracao_lista declaracao {YYSTYPE t = $1;
+                                                if (t != NULL) {
+                                                    while (t->sibling != NULL) t = t->sibling;
+                                                    t->sibling = $2;
+                                                    $$ = $1;
+                                                } else {
+                                                    $$ = $2;
+                                                }
+                                              }
+|                 declaracao {$$ = $1;}
 ;
         
 declaracao: 
-            var_declaracao {} 
-|           fun_declaracao {}
+            var_declaracao {$$ = $1;} 
+|           fun_declaracao {$$ = $1;}
 ;
 
 var_declaracao:
-                tipo_especificador ID SEMI {}
-|               tipo_especificador ID LBRACKET NUM RBRACKET SEMI {}
+                tipo_especificador ID SEMI {$$ = newStmtNode(VarDecK);
+                                            $$->child[0] = $1;
+                                           }
+|               tipo_especificador ID LBRACKET NUM RBRACKET SEMI {     
+                                                                  $$ = newStmtNode(VarDecK);
+                                                                  $$->child[0] = $1;
+                                                                 }
 ;
 
 tipo_especificador:
-                    INT {}
-|                   VOID {}
+                    INT {$$ = INT;}
+|                   VOID {$$ = VOID;}
 ;
 
 fun_declaracao:
-                tipo_especificador ID LPAREN params RPAREN composto_decl {}
+                tipo_especificador ID LPAREN params RPAREN composto_decl {$$ = newStmtNode(FunDecK);                                                            
+                                                                          $$->child[0] = $1;
+                                                                          $$->child[1] = $4;
+                                                                          $$->child[2] = $6;
+                                                                          }
 ;
 
 params:
-        param_lista {}
-|       VOID {}
+        param_lista {$$ = $1;}
+|       VOID {$$ = NULL;}
 ;
 
 param_lista:
-            param_lista COMMA param {}
-|           param {}
+            param_lista COMMA param {YYSTYPE t = $1;
+                                      if (t != NULL) {
+                                        while (t->sibling != NULL) t = t->sibling;
+                                              t->sibling = $3;
+                                              $$ = $1;
+                                    } else $$ = $3;}
+|           param {$$ = $1;}
 ;
 
 param: 
-      tipo_especificador ID {}
-|     tipo_especificador ID LBRACKET RBRACKET {}
+      tipo_especificador ID {$$ = $1;}
+|     tipo_especificador ID LBRACKET RBRACKET {$$ = $1;}
 ;
 
 composto_decl:
-              LBRACE local_declaracoes statement_lista RBRACE {}
+              LBRACE local_declaracoes statement_lista RBRACE {YYSTYPE t = $2;
+                if (t != NULL)
+                {
+                    while (t->sibling != NULL) t = t->sibling;
+                    t->sibling = $3;
+                    $$ = $2;
+			    }
+                else 
+                  $$ = $3;}
 ;
 
 local_declaracoes:
-                   local_declaracoes var_declaracao {}
-|                   /* vazio */ {}
+                   local_declaracoes var_declaracao {YYSTYPE t = $1;
+                if (t != NULL) {
+			        while (t->sibling != NULL) t = t->sibling;
+                    t->sibling = $2;
+                    $$ = $1;
+			    } else $$ = $2;}
+|                   /* vazio */ {$$ = NULL;}
 ;
 
 statement_lista:
-                  statement_lista statement {}
-|                  /* vazio */ {}
+                  statement_lista statement {YYSTYPE t = $1;
+                if (t != NULL){
+			        while (t->sibling != NULL) t = t->sibling;
+                    t->sibling = $2;
+                    $$ = $1;
+			    } else $$ = $2;}
+|                  /* vazio */ {$$ = NULL;}
 ;
 
 statement:
-            expressao_decl  {}
-|           composto_decl {}
-|           selecao_decl {}
-|           iteracao_decl {}
-|           retorno_decl {}
+            expressao_decl  {$$ = $1;}
+|           composto_decl {$$ = $1;}
+|           selecao_decl {$$ = $1;}
+|           iteracao_decl {$$ = $1;}
+|           retorno_decl {$$ = $1;}
 ;
 
 expressao_decl :
-                 expressao SEMI {}
-|                SEMI {}
+                 expressao SEMI {$$ = $1;}
+|                SEMI {$$ = NULL;}
 ;
 
 selecao_decl : 
-               IF LPAREN expressao RPAREN statement {}
-|              IF LPAREN expressao RPAREN statement ELSE statement {}
+               IF LPAREN expressao RPAREN statement {$$ = newStmtNode(IfK);
+                                                    $$->child[0] = $3;
+                                                    $$->child[1] = $5;}
+|              IF LPAREN expressao RPAREN statement ELSE statement {$$ = newStmtNode(IfK);
+                                                                    $$->child[0] = $3;
+                                                                    $$->child[1] = $5;
+                                                                    $$->child[2] = $7;}
 ;
 
 iteracao_decl :
-               WHILE LPAREN expressao RPAREN statement {}
+               WHILE LPAREN expressao RPAREN statement {$$ = newStmtNode(WhileK);
+                                                        $$->child[0] = $3;
+                                                        $$->child[1] = $5;}
 ;
 
 retorno_decl : 
-              RETURN SEMI {}
-|             RETURN expressao SEMI {}
+              RETURN SEMI {$$ = newStmtNode(ReturnK); }
+|             RETURN expressao SEMI {$$ = newStmtNode(ReturnK);
+			                               $$->child[0] = $2;}
 ;
 
 expressao : 
-              var ASSIGN expressao {}
-|             simples_expressao {}
+              var ASSIGN expressao {$$ = newStmtNode(AssignK);
+			    $$->child[0] = $1;
+			    $$->child[1] = $3;}
+|             simples_expressao {$$ = $1;}
 ;
 
 var : 
-      ID {}
-|     ID LBRACKET expressao RBRACKET {}
+      ID {$$ = newExpNode(IdK);
+			    $$->attr.name = copyString(tokenString);}
+|     ID LBRACKET expressao RBRACKET { $$ = newExpNode(IdK);
+			    $$->attr.name = copyString(tokenString);
+                $$ = $2;
+			    $$->child[0] = $4;}
 ;
 
 simples_expressao :
-                    soma_expressao relacional soma_expressao {}
-|                   soma_expressao {}
+                    soma_expressao relacional soma_expressao {$$ = newExpNode(OpK);
+                      $$->child[0] = $1;
+			    $$->child[1] = $2;
+			    $$->child[1] = $3;}
+|                   soma_expressao {$$ = $1; }
 ;
 
 relacional : 
-             LE {}
-|            LT {}
-|            GT {}
-|            GE {}
-|            EQ {}
-|            NE {}
+             LE {$$->attr.op  = LE; }
+|            LT {$$->attr.op  = LT; }
+|            GT {$$->attr.op  = GT; }
+|            GE {$$->attr.op  = GE; }
+|            EQ {$$->attr.op  = EQ; }
+|            NE {$$->attr.op  = NE; }
 ;
 
 soma_expressao: 
-                soma_expressao soma termo {}
-|               termo {}
+                soma_expressao soma termo {$$ = newExpNode(OpK);
+			    $$->child[0] = $1;
+			    $$->child[1] = $2;
+			    $$->child[2] = $3;}
+|               termo {$$ = $1;}
 
 soma : 
-      PLUS {}
-|     MINUS {}
+      PLUS {$$->attr.op = PLUS;}
+|     MINUS {$$->attr.op = MINUS;}
 ;
 
 termo : 
-        termo mult fator {}
-|       fator {}
+        termo mult fator {$$ = newExpNode(OpK);
+			    $$->child[0] = $1;
+			    $$->child[1] = $2;
+			    $$->child[2] = $3;}
+|       fator {$$ = $1;}
 ;
 
 mult : 
-      TIMES {}
-|     OVER {}
+      TIMES {$$->attr.op = TIMES;}
+|     OVER {$$->attr.op = OVER;}
 ;
 
 fator : 
-        LPAREN expressao RPAREN {}
-|       var {}
-|       ativacao {}
+        LPAREN expressao RPAREN {$$ = $2;}
+|       var {$$ = $1;}
+|       ativacao {$$ = $1;}
 |       NUM {$$ = newExpNode(ConstK);
              $$->attr.val = atoi(tokenString);}
 ;
 
 ativacao : 
-          ID LPAREN args RPAREN {}
+          ID LPAREN args RPAREN {
+            $$ = newStmtNode(CallK);
+			    $$->child[0] = newExpNode(IdK);
+			    $$->child[0]->attr.name = copyString(tokenString);
+            $$ = $2;
+			    $$->child[1] = $4;
+          }
 ;
 
 args : 
-      arg_lista {}
-|     /* vazio */ {}
+      arg_lista {$$ = $1;}
+|     /* vazio */ {$$ = NULL;}
+;
 
 arg_lista : 
-            arg_lista COMMA expressao {} 
-|           expressao {}
-
-
-/* Tiny
-
-stmt_seq    : stmt_seq SEMI stmt
-                 { YYSTYPE t = $1;
-                   if (t != NULL)
-                   { while (t->sibling != NULL)
-                        t = t->sibling;
-                     t->sibling = $3;
-                     $$ = $1; }
-                     else $$ = $3;
-                 }
-            | stmt  { $$ = $1; }
-            ;
-stmt        : if_stmt { $$ = $1; }
-            | repeat_stmt { $$ = $1; }
-            | assign_stmt { $$ = $1; }
-            | read_stmt { $$ = $1; }
-            | write_stmt { $$ = $1; }
-            | error  { $$ = NULL; }
-            ;
-if_stmt     : IF exp IF stmt_seq END
-                 { $$ = newStmtNode(IfK);
-                   $$->child[0] = $2;
-                   $$->child[1] = $4;
-                 }
-            | IF exp IF stmt_seq ELSE stmt_seq END
-                 { $$ = newStmtNode(IfK);
-                   $$->child[0] = $2;
-                   $$->child[1] = $4;
-                   $$->child[2] = $6;
-                 }
-            ;
-repeat_stmt : REPEAT stmt_seq UNTIL exp
-                 { $$ = newStmtNode(RepeatK);
-                   $$->child[0] = $2;
-                   $$->child[1] = $4;
-                 }
-            ;
-assign_stmt : ID { savedName = copyString(tokenString);
-                   savedLineNo = lineno; }
-              ASSIGN exp
-                 { $$ = newStmtNode(AssignK);
-                   $$->child[0] = $4;
-                   $$->attr.name = savedName;
-                   $$->lineno = savedLineNo;
-                 }
-            ;
-read_stmt   : READ ID
-                 { $$ = newStmtNode(ReadK);
-                   $$->attr.name =
-                     copyString(tokenString);
-                 }
-            ;
-write_stmt  : WRITE exp
-                 { $$ = newStmtNode(WriteK);
-                   $$->child[0] = $2;
-                 }
-            ;
-exp         : simple_exp LT simple_exp 
-                 { $$ = newExpNode(OpK);
-                   $$->child[0] = $1;
-                   $$->child[1] = $3;
-                   $$->attr.op = LT;
-                 }
-            | simple_exp EQ simple_exp
-                 { $$ = newExpNode(OpK);
-                   $$->child[0] = $1;
-                   $$->child[1] = $3;
-                   $$->attr.op = EQ;
-                 }
-            | simple_exp { $$ = $1; }
-            ;
-simple_exp  : simple_exp PLUS term 
-                 { $$ = newExpNode(OpK);
-                   $$->child[0] = $1;
-                   $$->child[1] = $3;
-                   $$->attr.op = PLUS;
-                 }
-            | simple_exp MINUS term
-                 { $$ = newExpNode(OpK);
-                   $$->child[0] = $1;
-                   $$->child[1] = $3;
-                   $$->attr.op = MINUS;
-                 } 
-            | term { $$ = $1; }
-            ;
-term        : term TIMES factor 
-                 { $$ = newExpNode(OpK);
-                   $$->child[0] = $1;
-                   $$->child[1] = $3;
-                   $$->attr.op = TIMES;
-                 }
-            | term OVER factor
-                 { $$ = newExpNode(OpK);
-                   $$->child[0] = $1;
-                   $$->child[1] = $3;
-                   $$->attr.op = OVER;
-                 }
-            | factor { $$ = $1; }
-            ;
-factor      : LPAREN exp RPAREN
-                 { $$ = $2; }
-            | NUM
-                 { $$ = newExpNode(ConstK);
-                   $$->attr.val = atoi(tokenString);
-                 }
-            | ID { $$ = newExpNode(IdK);
-                   $$->attr.name =
-                         copyString(tokenString);
-                 }
-            | error { $$ = NULL; }
-            ;
-End Tiny */ 
+            arg_lista COMMA expressao {TreeNode * t = $1;
+                                        if (t != NULL) {
+                                        while (t->sibling != NULL) t = t->sibling;
+                                              t->sibling = $3;
+                                              $$ = $1;
+                                        } else $$ = $3;
+                                        } 
+|           expressao {$$ = $1;}
+;
 
 %%
 
