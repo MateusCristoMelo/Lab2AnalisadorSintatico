@@ -128,11 +128,11 @@ void printTree( TreeNode * tree )
     { switch (tree->kind.stmt) {
         case IfK: fprintf(listing,"If\n"); break;
         case WhileK: fprintf(listing,"While\n"); break;
-        case AssignK: fprintf(listing,"Assign to: %s\n",tree->attr.name); break;
+        case AssignK: fprintf(listing,"Assign:\n"); break;
         case ReturnK: fprintf(listing,"Return\n"); break;
         case CallK: fprintf(listing,"Call\n"); break;
-        case VarDecK: fprintf(listing,"Variable Declaration\n"); printToken(tree->attr.op, "\0"); break;
-        case FunDecK: fprintf(listing,"Function Declaration\n"); printToken(tree->attr.op, "\0"); break;
+        case VarDecK: fprintf(listing,"Type Variab:\n"); break;
+        case FunDecK: fprintf(listing,"Type Func: \n"); break;
         default: fprintf(listing,"Unknown ExpNode kind\n"); break;
       }
     }

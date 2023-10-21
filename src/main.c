@@ -8,9 +8,9 @@
 #include "globals.h"
 
 /* set NO_PARSE to TRUE to get a scanner-only compiler */
-#define NO_PARSE TRUE
+#define NO_PARSE FALSE
 /* set NO_ANALYZE to TRUE to get a parser-only compiler */
-#define NO_ANALYZE FALSE
+#define NO_ANALYZE TRUE
 
 /* set NO_CODE to TRUE to get a compiler that does not
  * generate code
@@ -64,7 +64,7 @@ int main( int argc, char * argv[] )
     }
     strcpy(pgm,argv[1]);
     if (strchr (pgm, '.') == NULL)
-        strcat(pgm,".c");
+        strcat(pgm,".cm");
     source = fopen(pgm,"r");
 
     linhas_codigo = fopen(pgm,"r");
@@ -94,9 +94,11 @@ int main( int argc, char * argv[] )
 #if NO_PARSE
   while (getToken()!=ENDFILE);
 #else
+  fprintf(listing,"\nStart parse():\n");
   syntaxTree = parse();
   doneLEXstartSYN();
   if (TraceParse) {
+
     fprintf(listing,"\nSyntax tree:\n");
     printTree(syntaxTree);
   }

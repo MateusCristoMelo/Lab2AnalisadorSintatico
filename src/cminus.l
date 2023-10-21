@@ -11,6 +11,7 @@
 /* lexeme of identifier or reserved word */
 char tokenString[MAXTOKENLEN+1];
 static int yylex(void);
+char* id_name;
 %}
 
 digit       [0-9]
@@ -50,7 +51,8 @@ whitespace  [ \t]+
 "["             {return LBRACKET;}
 "]"             {return RBRACKET;}
 {number}        {return NUM;}
-{identifier}    {return ID;}
+{identifier}    { id_name = copyString(yytext);
+                  return ID;}
 {newline}       {
                 if(linhas[lineno] == NULL)
                   fprintf(listing,"%d: \n",lineno + 1);
