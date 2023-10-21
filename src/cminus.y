@@ -112,7 +112,6 @@ param:
 			    $$->attr.op = $1;
 			    $$->child[0] = newExpNode(IdK);
                       $$->child[0]->attr.name = copyString(id_name);
-                       $$ = $3; 
                        }
 ;
 //
@@ -196,8 +195,7 @@ var :
             	    }
 |     ID LBRACKET expressao RBRACKET { $$ = newExpNode(IdK);
                 $$->attr.name = copyString(id_name);
-                $$ = $2;
-		       $$->child[0] = $4;}
+		      $$->child[0] = $3;}
 ;
 // Treta
 simples_expressao :
@@ -209,12 +207,12 @@ simples_expressao :
 ;
 // Treta
 relacional : 
-             LE {$$ = LE; }
-|            LT {$$ = LT; }
-|            GT {$$ = GT; }
-|            GE {$$ = GE; }
-|            EQ {$$  = EQ; }
-|            NE {$$  = NE; }
+             LE {$$ = (YYSTYPE) LE; }
+|            LT {$$ = (YYSTYPE) LT; }
+|            GT {$$ = (YYSTYPE) GT; }
+|            GE {$$ = (YYSTYPE) GE; }
+|            EQ {$$  = (YYSTYPE) EQ; }
+|            NE {$$  = (YYSTYPE) NE; }
 ;
 // Treta
 soma_expressao: 
@@ -225,8 +223,8 @@ soma_expressao:
 |               termo {$$ = $1;}
 // Treta
 soma : 
-      PLUS {$$ = PLUS;}
-|     MINUS {$$ = MINUS;}
+      PLUS {$$ = (YYSTYPE) PLUS;}
+|     MINUS {$$ = (YYSTYPE) MINUS;}
 ;
 // TReta
 termo : 
@@ -238,8 +236,8 @@ termo :
 ;
 // Treta
 mult : 
-      TIMES {$$ = TIMES;}
-|     OVER {$$ = OVER;}
+      TIMES {$$ = (YYSTYPE) TIMES;}
+|     OVER {$$ = (YYSTYPE) OVER;}
 ;
 //
 fator : 
@@ -255,9 +253,7 @@ ativacao :
             $$ = newStmtNode(CallK);
 			    $$->child[0] = newExpNode(IdK);
                       $$->child[0]->attr.name = copyString(id_name);
-			    
-            $$ = $2;
-			    $$->child[1] = $4;
+			    $$->child[1] = $3;
           }
 ;
 //
