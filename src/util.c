@@ -12,6 +12,43 @@
 /* Procedure printToken prints a token 
  * and its lexeme 
  */
+
+void printTokenSyn( TokenType token, const char* tokenString )
+{ switch (token)
+  { 
+    case ELSE:
+    case IF:
+    case RETURN:
+    case WHILE:
+    case VOID: fprintf(listing,"void\n"); break;
+    case INT: fprintf(listing,"int\n"); break;
+    case ASSIGN: fprintf(listing,"=\n"); break;
+    case EQ: fprintf(listing,"==\n"); break;
+    case LT: fprintf(listing,"<\n"); break;
+    case LE: fprintf(listing,"<=\n"); break;
+    case GT: fprintf(listing,">\n"); break;
+    case GE: fprintf(listing,">=\n"); break;
+    case NE: fprintf(listing,"!=\n"); break;
+    case LPAREN: fprintf(listing,"(\n"); break;
+    case RPAREN: fprintf(listing,")\n"); break;
+    case SEMI: fprintf(listing,";\n"); break;
+    case PLUS: fprintf(listing,"+\n"); break;
+    case MINUS: fprintf(listing,"-\n"); break;
+    case TIMES: fprintf(listing,"*\n"); break;
+    case OVER: fprintf(listing,"/\n"); break;
+    case COMMA: fprintf(listing,",\n"); break;
+    case LBRACE: fprintf(listing,"{\n"); break;
+    case RBRACE: fprintf(listing,"}\n"); break;
+    case LBRACKET: fprintf(listing,"[\n"); break;
+    case RBRACKET: fprintf(listing,"]\n"); break;
+    case ENDFILE: fprintf(listing,"EOF\n"); break;
+    case NUM: fprintf(listing, "NUM, val= %s\n",tokenString); break;
+    case ID: fprintf(listing, "ID, name= %s\n",tokenString); break;
+    case ERROR: fprintf(listing, "ERROR: %s\n",tokenString); break;
+    default: /* should never happen */ fprintf(listing,"Unknown token: %d\n",token);
+  }
+}
+
 void printToken( TokenType token, const char* tokenString )
 { switch (token)
   { 
@@ -130,15 +167,15 @@ void printTree( TreeNode * tree )
         case WhileK: fprintf(listing,"While\n"); break;
         case AssignK: fprintf(listing,"Assign:\n"); break;
         case ReturnK: fprintf(listing,"Return\n"); break;
-        case CallK: fprintf(listing,"Call\n"); break;
-        case VarDecK: fprintf(listing,"Type Variab:\n"); break;
-        case FunDecK: fprintf(listing,"Type Func: \n"); break;
+        case CallK: /*fprintf(listing,"Call\n"); */break;
+        case VarDecK: fprintf(listing,"Type: ");printTokenSyn(tree->attr.op,"\0"); break;
+        case FunDecK: fprintf(listing,"Type: ");printTokenSyn(tree->attr.op,"\0"); break;
         default: fprintf(listing,"Unknown ExpNode kind\n"); break;
       }
     }
     else if (tree->nodekind==ExpK)
     { switch (tree->kind.exp) {
-        case OpK: fprintf(listing,"Op: "); printToken(tree->attr.op,"\0"); break;
+        case OpK: fprintf(listing,"Op: "); printTokenSyn(tree->attr.op,"\0"); break;
         case ConstK: fprintf(listing,"Const: %d\n",tree->attr.val); break;
         case IdK: fprintf(listing,"Id: %s\n",tree->attr.name); break;
         default: fprintf(listing,"Unknown ExpNode kind\n"); break;

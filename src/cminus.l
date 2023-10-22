@@ -12,6 +12,7 @@
 char tokenString[MAXTOKENLEN+1];
 static int yylex(void);
 char* id_name;
+char* type_name;
 %}
 
 digit       [0-9]
@@ -27,9 +28,11 @@ whitespace  [ \t]+
 
 "else"          {return ELSE;}
 "if"            {return IF;}
-"int"           {return INT;}
+"int"           { type_name = copyString(yytext);
+                  return INT;}
 "return"        {return RETURN;}
-"void"          {return VOID;}
+"void"          { type_name = copyString(yytext);
+                  return VOID;}
 "while"         {return WHILE;}
 "="             {return ASSIGN;}
 "=="            {return EQ;}

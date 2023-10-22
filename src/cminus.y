@@ -68,7 +68,7 @@ var_declaracao:
                                                                   $$->child[0]->attr.name = copyString(id_name);
                                                                   $$->child[0]->child[0] = newExpNode(ConstK);
                                                                   $$->child[0]->child[0]->attr.val = atoi(tokenString);
-                                                                  $$ = $5;
+                                                                  
                                                                  }
 ;
 //
