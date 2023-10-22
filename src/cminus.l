@@ -54,7 +54,7 @@ whitespace  [ \t]+
 "["             {return LBRACKET;}
 "]"             {return RBRACKET;}
 {number}        {return NUM;}
-{identifier}    { id_name = copyString(yytext);
+{identifier}    { // id_name = copyString(yytext);
                   return ID;}
 {newline}       {
                 if(linhas[lineno] == NULL)

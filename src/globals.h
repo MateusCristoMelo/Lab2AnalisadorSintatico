@@ -60,7 +60,6 @@ extern FILE* code; /* code text file for TM simulator */
 extern char **linhas;
 extern char *id_name;
 extern char *type_name;
-
 extern int lineno; /* source line number for listing */
 
 /**************************************************/
