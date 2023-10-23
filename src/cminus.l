@@ -11,8 +11,8 @@
 /* lexeme of identifier or reserved word */
 char tokenString[MAXTOKENLEN+1];
 static int yylex(void);
-char* id_name;
-char* type_name;
+// char* id_name;
+// char* type_name;
 %}
 
 digit       [0-9]
@@ -28,10 +28,10 @@ whitespace  [ \t]+
 
 "else"          {return ELSE;}
 "if"            {return IF;}
-"int"           { type_name = copyString(yytext);
+"int"           { // type_name = copyString(yytext);
                   return INT;}
 "return"        {return RETURN;}
-"void"          { type_name = copyString(yytext);
+"void"          { // type_name = copyString(yytext);
                   return VOID;}
 "while"         {return WHILE;}
 "="             {return ASSIGN;}
@@ -65,27 +65,27 @@ whitespace  [ \t]+
                 }
 
 {whitespace}    {/* skip whitespace */}
-"/*" { char c;
-       char d;
-       //printf("%d: /*", lineno);
-       do {
-        c = input();
-        //printf("%c", c);
-        if (c == EOF) break;
-        if (c == '\n') 
-        {
-          lineno++;
-          //printf("%d: ", lineno);
-          fprintf(listing,"%d: %s",lineno, linhas[lineno - 1]);
-        }
-        if (c == '*') /* to close the comment, '/' must follow '*' */ 
-        {
-          d = input();
-          if (d == '/') break;
-        }
-       } while (c);
-       //printf("/\n");
-      }
+"/*"            { char c;
+                 char d;
+                 //printf("%d: /*", lineno);
+                 do {
+                  c = input();
+                  //printf("%c", c);
+                  if (c == EOF) break;
+                  if (c == '\n') 
+                  {
+                    lineno++;
+                    //printf("%d: ", lineno);
+                    fprintf(listing,"%d: %s",lineno, linhas[lineno - 1]);
+                  }
+                  if (c == '*') /* to close the comment, '/' must follow '*' */ 
+                  {
+                    d = input();
+                    if (d == '/') break;
+                  }
+                 } while (c);
+                 //printf("/\n");
+                }
 .               {return ERROR;}
 
 %%

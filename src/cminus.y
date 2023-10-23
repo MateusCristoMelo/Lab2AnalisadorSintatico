@@ -13,10 +13,10 @@
 #include "parse.h"
 #define YYSTYPE TreeNode *
 
-YYSTYPE savedTree; /* stores syntax tree for later return */
-
-// static char * id_name;
-// static int id_number;
+static int savedNumber;
+static char * savedName; /* for use in assignments */
+static int savedLineNo;  /* ditto */
+static TreeNode * savedTree; /* stores syntax tree for later return */
 
 static int yylex(void);
 int yyerror(char *s);
@@ -58,29 +58,32 @@ declaracao:
             var_declaracao {$$ = $1;} 
 |           fun_declaracao {$$ = $1;}
 ;
-//   
-id: 
-            ID {id_name = copyString(tokenString);}
+//
+id:               ID {
+                              savedName = copyString(tokenString);
+                              savedLineNo = lineno;
+                     }
 ;
-//   
-/* num: 
- *             NUM {id_number = atoi(tokenString);}
- * ;
- */   
+//
+num:              NUM {
+                              savedNumber = savedNumber;
+                              savedLineNo = lineno;
+                      }
+;
+//
 var_declaracao:
                   tipo_especificador id SEMI {
                                                       $$ = newStmtNode(VarDecK);
                                                       $$->attr.op = $1;
                                                       $$->child[0] = newExpNode(IdK);
-                                                      $$->child[0]->attr.name = copyString(id_name);    
+                                                      $$->child[0]->attr.name = savedName;   
                                            }
-|                 tipo_especificador id LBRACKET NUM RBRACKET SEMI {
+|                 tipo_especificador id LBRACKET num RBRACKET SEMI {
                                                                         $$ = newStmtNode(VarDecK);
                                                                         $$->attr.op = $1;
                                                                         $$->child[0] = newExpNode(IdK);
-                                                                        $$->child[0]->attr.name = copyString(id_name);
                                                                         $$->child[0]->child[0] = newExpNode(ConstK);
-                                                                        $$->child[0]->child[0]->attr.val = atoi(tokenString);
+                                                                        $$->child[0]->child[0]->attr.val = savedNumber;
                                                                         $$ = $5;
                                                                  }
 ;
@@ -91,14 +94,17 @@ tipo_especificador:
 ;
 //Problema ta aqui
 fun_declaracao:
-                  tipo_especificador id LPAREN params RPAREN composto_decl {
-                                                                                    $$ = newStmtNode(FunDecK);                                                                                                                                     
-                                                                                    $$->attr.op = $1;
-                                                                                    $$->child[0] = newExpNode(IdK);
-                                                                                    $$->child[0]->attr.name = copyString(id_name);
-                                                                                    $$->child[1] = $4;
-                                                                                    $$->child[2] = $6;
-                                                                         }
+                  tipo_especificador id {
+                                                $$ = newStmtNode(FunDecK);                                                                                                                                     
+                                                $$->attr.op = $1;
+                                                $$->child[0] = newExpNode(IdK);
+                                                $$->child[0]->attr.name = savedName;
+                                        }
+                  LPAREN params RPAREN composto_decl {
+                                                            $$ = $3;
+                                                            $$->child[1] = $5;
+                                                            $$->child[2] = $7;
+                                                     }
 ;
 // Problema ta aqui
 params:
@@ -125,13 +131,13 @@ param:
                                                 $$ = newStmtNode(VarDecK);
 	            		                  $$->attr.op = $1;
 	            		                  $$->child[0] = newExpNode(IdK);
-                                                $$->child[0]->attr.name = copyString(id_name);
+                                                $$->child[0]->attr.name = savedName;
 	            		          }
 |                 tipo_especificador id LBRACKET RBRACKET {
                                                                   $$ = newStmtNode(VarDecK);
 	            		                                    $$->attr.op = $1;
 	            		                                    $$->child[0] = newExpNode(IdK);
-                                                                  $$->child[0]->attr.name = copyString(id_name);
+                                                                  $$->child[0]->attr.name = savedName;
                                                           }
 ;
 //
@@ -231,11 +237,11 @@ expressao:
 var: 
                   id {
                               $$ = newExpNode(IdK);
-                              $$->attr.name = copyString(id_name);
+                              $$->attr.name = savedName;
                      }
 |                 id LBRACKET expressao RBRACKET { 
                                                       $$ = newExpNode(IdK);
-                                                      $$->attr.name = copyString(id_name);
+                                                      $$->attr.name = savedName;
 	            	                              $$->child[0] = $3;
                                                  }
 ;
@@ -302,7 +308,7 @@ ativacao:
                   id LPAREN args RPAREN {
                                                 $$ = newStmtNode(CallK);
 		            	                  $$->child[0] = newExpNode(IdK);
-                                                $$->child[0]->attr.name = copyString(id_name);
+                                                $$->child[0]->attr.name = savedName;
 		            	                  $$->child[1] = $3;
                                         }
 ;
