@@ -33,4 +33,28 @@ char * copyString( char * );
  */
 void printTree( TreeNode * );
 
+
+#define MAX_SIZE 100
+
+// Definição da estrutura da pilha
+struct Stack {
+    void *items[MAX_SIZE];
+    int top;
+};
+
+// Função para inicializar a pilha
+void initStack(struct Stack *stack);
+
+// Função para verificar se a pilha está vazia
+int isEmpty(struct Stack *stack);
+
+// Função para verificar se a pilha está cheia
+int isFull(struct Stack *stack);
+
+// Função para adicionar um elemento à pilha (push)
+void push(struct Stack *stack, void *item);
+
+// Função para retirar um elemento da pilha (pop)
+void *pop(struct Stack *stack);
+
 #endif

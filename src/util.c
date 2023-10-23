@@ -13,6 +13,41 @@
  * and its lexeme 
  */
 
+// Função para inicializar a pilha
+void initStack(struct Stack *stack) {
+    stack->top = -1;
+}
+
+// Função para verificar se a pilha está vazia
+int isEmpty(struct Stack *stack) {
+    return (stack->top == -1);
+}
+
+// Função para verificar se a pilha está cheia
+int isFull(struct Stack *stack) {
+    return (stack->top == MAX_SIZE - 1);
+}
+
+// Função para adicionar um elemento à pilha (push)
+void push(struct Stack *stack, void *item) {
+    if (isFull(stack)) {
+        printf("Erro: a pilha está cheia e não é possível adicionar mais elementos.\n");
+    } else {
+        stack->items[++stack->top] = item;
+    }
+}
+
+// Função para retirar um elemento da pilha (pop)
+void *pop(struct Stack *stack) {
+    if (isEmpty(stack)) {
+        printf("Erro: a pilha está vazia e não é possível retirar elementos.\n");
+        return NULL;
+    } else {
+        return stack->items[stack->top--];
+    }
+}
+
+
 void printTokenSyn( TokenType token, const char* tokenString )
 { switch (token)
   { 
@@ -167,7 +202,7 @@ void printTree( TreeNode * tree )
         case WhileK: fprintf(listing,"While\n"); break;
         case AssignK: fprintf(listing,"Assign:\n"); break;
         case ReturnK: fprintf(listing,"Return\n"); break;
-        case CallK: /*fprintf(listing,"Call\n"); */break;
+        case CallK: fprintf(listing,"Activation: %s\n", tree->attr.name); /*printTokenSyn(tree->attr.name,"\0"); */break;
         case VarDecK: fprintf(listing,"Type: ");printTokenSyn(tree->attr.op,"\0"); break;
         case FunDecK: fprintf(listing,"Type: ");printTokenSyn(tree->attr.op,"\0"); break;
         default: fprintf(listing,"Unknown ExpNode kind\n"); break;
