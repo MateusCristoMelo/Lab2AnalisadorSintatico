@@ -37,6 +37,7 @@ FILE * listing;
 FILE * code;
 char **linhas = NULL;
 struct Stack name_stack;
+struct Stack number_stack; 
 
 /* allocate and set tracing flags */
 int EchoSource = FALSE;
@@ -58,6 +59,7 @@ int main( int argc, char * argv[] )
   FILE * linhas_codigo;
   FILE * linhas_iteracao;
   initStack(&name_stack);
+  initStack(&number_stack);
 
     char pgm[120]; /* source code file name */
     if ((argc < 2) || (argc > 3))

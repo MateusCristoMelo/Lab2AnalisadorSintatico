@@ -12,7 +12,9 @@
 char tokenString[MAXTOKENLEN+1];
 static int yylex(void);
 extern struct Stack name_stack;
+extern struct Stack number_stack;
 char *id_name;
+int *number_value;
 %}
 
 digit       [0-9]
@@ -51,7 +53,9 @@ whitespace  [ \t]+
 "}"             {return RBRACE;}
 "["             {return LBRACKET;}
 "]"             {return RBRACKET;}
-{number}        {return NUM;}
+{number}        {number_value = copyString(yytext);
+                 push(&number_stack, number_value);
+                 return NUM;}
 {identifier}    {id_name = copyString(yytext);
                  push(&name_stack, id_name);
                  return ID;}

@@ -19,6 +19,7 @@ static TreeNode * savedTree; /* stores syntax tree for later return */
 static int yylex(void);
 int yyerror(char *s);
 extern struct Stack name_stack;
+extern struct Stack number_stack;
 extern char *id_name;
 
 void testezera(void)
@@ -70,10 +71,11 @@ var_declaracao:
                                                                   $$->child[0] = newExpNode(IdK);
                                                                   char *poppedStr = (char *)pop(&name_stack);
                                                                   $$->child[0]->attr.name = copyString(poppedStr);  
-                                                                  //$$->child[0]->attr.name = copyString(id_name);
                                                                   $$->child[0]->child[0] = newExpNode(ConstK);
-                                                                  $$->child[0]->child[0]->attr.val = atoi(tokenString);
-                                                                  
+                                                                  int *poppedInt = (int *)pop(&number_stack);
+                                                                  $$->child[0]->child[0]->attr.val = atoi(poppedInt);
+                                                            //|       NUM {$$ = newExpNode(ConstK);
+                                                                  //$$->attr.val = atoi(tokenString);}
                                                                  }
 ;
 
@@ -88,7 +90,7 @@ fun_declaracao:
                                                                           $$->child[0] = newExpNode(IdK);
                                                                           char *poppedStr = (char *)pop(&name_stack);
                                                                           $$->child[0]->attr.name = copyString(poppedStr);  
-                                                                          //fprintf(listing, "CU do krl %s\n", poppedStr);
+
                                                                           $$->child[1] = $4;
                                                                           $$->child[2] = $6;
                                                                           }
@@ -262,10 +264,11 @@ fator :
 ativacao : 
           ID LPAREN args RPAREN {
             $$ = newStmtNode(CallK);
-			    $$->child[0] = newExpNode(IdK);
-                      char *poppedStr = (char *)pop(&name_stack);
-                      $$->child[0]->attr.name = copyString(poppedStr);
-			    $$->child[1] = $3;
+            $$->child[0] = newExpNode(IdK);
+            char *poppedStr = (char *)pop(&name_stack);
+            $$->child[0]->attr.name = NULL;
+            $$->attr.name = copyString(poppedStr);
+            $$->child[1] = $3;
           }
 ;
 
