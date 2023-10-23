@@ -10,7 +10,7 @@
 #define _SCAN_H_
 
 /* MAXTOKENLEN is the maximum size of a token */
-#define MAXTOKENLEN 40
+#define MAXTOKENLEN 30
 
 /* tokenString array stores the lexeme of each token */
 extern char tokenString[MAXTOKENLEN+1];

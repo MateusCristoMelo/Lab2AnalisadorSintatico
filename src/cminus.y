@@ -22,11 +22,6 @@ extern struct Stack name_stack;
 extern struct Stack number_stack;
 extern char *id_name;
 
-void testezera(void)
-{
-      fprintf(listing, "Karalhow");
-}
-
 %}
 
 %token ELSE IF INT RETURN VOID WHILE 

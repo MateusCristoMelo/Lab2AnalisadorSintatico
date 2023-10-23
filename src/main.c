@@ -80,11 +80,13 @@ int main( int argc, char * argv[] )
     }
 
     while ((lidos = getline(&linha, &tamanho, linhas_codigo)) != -1) {
-      linhas = realloc(linhas, (numero_de_linhas + 1) * sizeof(char *));
+      linhas = realloc(linhas, (numero_de_linhas + 2) * sizeof(char *));
       linhas[numero_de_linhas] = malloc((size_t)(lidos + 1));
       strcpy(linhas[numero_de_linhas], linha);
       numero_de_linhas++;
     }
+
+
     
     char detailpath[200];
     if (3 == argc) {
@@ -93,6 +95,8 @@ int main( int argc, char * argv[] )
     
     listing = stdout; /* send listing to screen */
     initializePrinter(detailpath, pgm, LOGALL);
+
+
     
   fprintf(listing,"\nC- COMPILATION: %s\n",pgm);
 #if NO_PARSE
