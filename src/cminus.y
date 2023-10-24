@@ -55,19 +55,19 @@ declaracao:
 
 var_declaracao:
                 tipo_especificador ID SEMI {$$ = newStmtNode(VarDecK);
-                                            $$->attr.op = $1;
+                                            $$->attr.op =  (TokenType)(intptr_t)$1;
                 $$->child[0] = newExpNode(IdK);
                 char *poppedStr = (char *)pop(&name_stack);
                 $$->child[0]->attr.name = copyString(poppedStr);    
                                            }
 |               tipo_especificador ID LBRACKET NUM RBRACKET SEMI {     
                                                                   $$ = newStmtNode(VarDecK);
-                                                                  $$->attr.op = $1;
+                                                                  $$->attr.op = (TokenType)(intptr_t)$1;
                                                                   $$->child[0] = newExpNode(IdK);
                                                                   char *poppedStr = (char *)pop(&name_stack);
                                                                   $$->child[0]->attr.name = copyString(poppedStr);  
                                                                   $$->child[0]->child[0] = newExpNode(ConstK);
-                                                                  int *poppedInt = (int *)pop(&number_stack);
+                                                                  char *poppedInt = (char *)pop(&number_stack);
                                                                   $$->child[0]->child[0]->attr.val = atoi(poppedInt);
                                                             //|       NUM {$$ = newExpNode(ConstK);
                                                                   //$$->attr.val = atoi(tokenString);}
@@ -75,13 +75,13 @@ var_declaracao:
 ;
 
 tipo_especificador:
-                    INT {$$ = INT;}
-|                   VOID {$$ = VOID;}
+                    INT {$$ = (YYSTYPE) INT;}
+|                   VOID {$$ = (YYSTYPE) VOID;}
 ;
 
 fun_declaracao:
                 tipo_especificador ID LPAREN params RPAREN composto_decl {$$ = newStmtNode(FunDecK);                                                                                                                                     
-                                                                          $$->attr.op = $1;
+                                                                          $$->attr.op = (TokenType)(intptr_t)$1;
                                                                           $$->child[0] = newExpNode(IdK);
                                                                           char *poppedStr = (char *)pop(&name_stack);
                                                                           $$->child[0]->attr.name = copyString(poppedStr);  
@@ -108,13 +108,13 @@ param_lista:
 
 param: 
       tipo_especificador ID {$$ = newStmtNode(VarDecK);
-			    $$->attr.op = $1;
+			    $$->attr.op = (TokenType)(intptr_t)$1;
 			    $$->child[0] = newExpNode(IdK);
                       char *poppedStr = (char *)pop(&name_stack);
                       $$->child[0]->attr.name = copyString(poppedStr);  
 			   }
 |     tipo_especificador ID LBRACKET RBRACKET {$$ = newStmtNode(VarDecK);
-			    $$->attr.op = $1;
+			    $$->attr.op = (TokenType)(intptr_t)$1;
 			    $$->child[0] = newExpNode(IdK);
                       char *poppedStr = (char *)pop(&name_stack);
                       $$->child[0]->attr.name = copyString(poppedStr);  
@@ -209,7 +209,7 @@ var :
 simples_expressao :
                     soma_expressao relacional soma_expressao {$$ = newExpNode(OpK);
                       $$->child[0] = $1;
-			    $$->attr.op = $2;
+			    $$->attr.op = (TokenType)(intptr_t)$2;
 			    $$->child[1] = $3;}
 |                   soma_expressao {$$ = $1; }
 ;
@@ -226,7 +226,7 @@ relacional :
 soma_expressao: 
                 soma_expressao soma termo {$$ = newExpNode(OpK);
 			    $$->child[0] = $1;
-			    $$->attr.op = $2;
+			    $$->attr.op = (TokenType)(intptr_t) $2;
 			    $$->child[2] = $3;}
 |               termo {$$ = $1;}
 
@@ -238,7 +238,7 @@ soma :
 termo : 
         termo mult fator {$$ = newExpNode(OpK);
 			    $$->child[0] = $1;
-			    $$->attr.op = $2;
+			    $$->attr.op = (TokenType)(intptr_t)$2;
 			    $$->child[2] = $3;}
 |       fator {$$ = $1;}
 ;
@@ -281,10 +281,6 @@ arg_lista :
                                         } else $$ = $3;
                                         } 
 |           expressao {$$ = $1;}
-;
-
-teste_final :
-            /*vazio*/ {$$ = NULL;}
 ;
 
 %%

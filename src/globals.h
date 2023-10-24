@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
+#include <stdint.h>
 #include "log.h"
 
 /* Yacc/Bison generates internally its own values

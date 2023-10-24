@@ -14,7 +14,7 @@ static int yylex(void);
 extern struct Stack name_stack;
 extern struct Stack number_stack;
 char *id_name;
-int *number_value;
+char *number_value;
 %}
 
 digit       [0-9]
